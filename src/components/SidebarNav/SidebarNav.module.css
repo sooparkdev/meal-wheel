@@ -1,0 +1,64 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 60px 0;
+  transition: width 0.3s ease;
+  background-color: rgb(180, 213, 202);
+  color: rgb(5, 30, 28);
+}
+
+.sidebar .text {
+  font-size: 24px;
+}
+
+.appName {
+  font-size: 28px;
+  /* white-space: nowrap; */
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  margin: 140px 0;
+}
+
+.sidebar.expanded {
+  width: var(--sidebar-expanded-width);
+}
+
+.sidebar.collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+.navItem a,
+.section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.collapsed .text {
+  display: none;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 50%;
+  right: -60px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.toggleButton:hover {
+  opacity: 1;
+}
