@@ -153,7 +153,7 @@ const ProfileForm = ({ isInitialSetup }) => {
         return;
       }
     }
-//
+////
     try {
       const response = await updateUser(apiRequestData);
       setUserDetails((prev) => {
