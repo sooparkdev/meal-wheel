@@ -2,6 +2,7 @@ import chainMiddlewares from "@/util/chainMiddlewares";
 import checkMethod from "@/util/checkMethod";
 import { updateDocument } from "@/lib/firebase/firestoreAdmin";
 import { bucket } from "@/lib/firebase/firebaseAdmin";
+import updateUser from "@/services/userServices";
 
 async function finalHandler(req, res) {
   const { uid, ...updateData } = req.body;

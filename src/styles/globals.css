@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --sidebar-expanded-width: 320px;
   --sidebar-collapsed-width: 120px;
@@ -36,7 +40,7 @@ ul {
 }
 
 button {
-  background-color: transparent;
+  background-color: white;
   border: none;
 }
 

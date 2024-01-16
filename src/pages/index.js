@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/index.module.css";
 import Spinner from "@/components/Spinner";
+import Calendar from "@/components/Calendar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,7 @@ const CalendarPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        ROOOOOOOOOOOOOOOOT
+        <Calendar />
       </main>
     </>
   );

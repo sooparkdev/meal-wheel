@@ -7,16 +7,8 @@ import Image from "next/image";
 import styles from "@/components/ProfileForm/ProfileForm.module.css";
 import UserAvatar from "../UserAvatar";
 import Spinner from "@/components/Spinner";
-import { updateUser } from "@/apiClient/userApi";
-
-const neighborhoodsList = ["Downtown", "Midtown", "Uptown", "Suburb", "Rural"];
-const dietaryPreferencesList = [
-  "Vegetarian",
-  "Vegan",
-  "Gluten-Free",
-  "Keto",
-  "Paleo",
-];
+import { updateUserForm } from "@/apiClient/userApi";
+import { neighborhoodsList, dietaryPreferencesList } from "@/constants/lists";
 
 const ProfileForm = ({ isInitialSetup }) => {
   const router = useRouter();
@@ -30,6 +22,8 @@ const ProfileForm = ({ isInitialSetup }) => {
     neighborhoods: [],
     dietaryPreferences: [],
   });
+  const [previewProfileImageUrl, setPreviewProfileImageUrl] = useState("");
+  const fileInputRef = useRef();
 
   useEffect(() => {
     if (!isInitialSetup && userDetails) {
@@ -44,9 +38,6 @@ const ProfileForm = ({ isInitialSetup }) => {
     }
   }, [isInitialSetup, userDetails]);
 
-  const [previewProfileImageUrl, setPreviewProfileImageUrl] = useState("");
-
-  const fileInputRef = useRef();
   const triggerFileInput = (e) => {
     // Trigger the hidden file input click event
     e.stopPropagation();
@@ -55,7 +46,7 @@ const ProfileForm = ({ isInitialSetup }) => {
       return;
     }
     fileInputRef.current.click();
-  };
+  }; // can maybe delete this later
 
   if (userDetails === undefined) {
     return <Spinner />;
@@ -110,42 +101,33 @@ const ProfileForm = ({ isInitialSetup }) => {
     const apiRequestData = new FormData();
     apiRequestData.append("uid", userAuthStatus.uid);
 
-    if (isInitialSetup) {
-      apiRequestData.append("isInitialSetup", true);
-
-      Object.keys(formData).forEach((key) => {
-        const value = formData[key];
-        if (key === "neighborhoods" || key === "dietaryPreferences") {
-          if (value.length > 0) {
-            value.forEach((item) => apiRequestData.append(key, item));
-          } else {
-            apiRequestData.append(key, null);
-          }
+    const appendFormData = (key, value) => {
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          apiRequestData.append(key, null);
         } else {
-          apiRequestData.append(key, value);
+          value.forEach((item) => apiRequestData.append(key, item));
         }
+      } else {
+        apiRequestData.append(key, value);
+      }
+    };
+
+    if (isInitialSetup) {
+      apiRequestData.append("hasCompletedOnboarding", true);
+      Object.keys(formData).forEach((key) => {
+        appendFormData(key, formData[key]);
       });
     } else {
       let hasDataToSend = false;
 
       Object.keys(formData).forEach((key) => {
-        console.log(key);
-        console.log(formData[key]);
-        console.log(userDetails[key]);
-        if (formData[key] !== userDetails[key]) {
-          const value = formData[key];
-          if (key === "neighborhoods" || key === "dietaryPreferences") {
-            if (value.length > 0) {
-              value.forEach((item) => apiRequestData.append(key, item));
-              hasDataToSend = true;
-            } else {
-              apiRequestData.append(key, null);
-              hasDataToSend = true;
-            }
-          } else {
-            apiRequestData.append(key, value);
-            hasDataToSend = true;
-          }
+        const newValue = formData[key];
+        const oldValue = userDetails[key];
+
+        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
+          hasDataToSend = true;
+          appendFormData(key, newValue);
         }
       });
 
@@ -153,9 +135,9 @@ const ProfileForm = ({ isInitialSetup }) => {
         return;
       }
     }
-////
+
     try {
-      const response = await updateUser(apiRequestData);
+      const response = await updateUserForm(apiRequestData);
       setUserDetails((prev) => {
         // console.log("^^^^^PREV", prev);
         // console.log("^^^^^UPDATED FIELDS", response.updatedFields);
@@ -198,15 +180,9 @@ const ProfileForm = ({ isInitialSetup }) => {
       </label>
       <label>
         Profile Image:
-        {/* <div
-          for="profileImage"
-          className={styles.custom}
-          onClick={triggerFileInput}
-        > */}
         <UserAvatar
           imageUrl={previewProfileImageUrl || formData.profileImageUrl}
         />
-        {/* </div> */}
         <input
           ref={fileInputRef}
           type="file"
